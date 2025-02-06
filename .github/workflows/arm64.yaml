@@ -24,9 +24,12 @@ jobs:
           docker version
           docker info
 
-      - name: Container
+      - name: Container r-base
         run: |
           docker pull r-base
           docker run --rm r-base R -q -e 'R.version'
 
-          
+      - name: Container ubuntu:noble
+        run: |
+          docker pull ubuntu:noble
+          docker run --rm ubuntu:noble uname -a
