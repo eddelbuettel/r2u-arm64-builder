@@ -33,3 +33,4 @@ jobs:
         run: |
           docker pull ubuntu:noble
           docker run --rm ubuntu:noble uname -a
+          docker run --rm ubuntu:noble bash -c 'apt update -q; apt install -y dpkg-dev; dpkg-architecture'
