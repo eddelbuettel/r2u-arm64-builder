@@ -19,19 +19,17 @@ RUN useradd -s /bin/bash -m docker \
 		ca-certificates \
 		locales \
 		wget \
-                software-properties-common \
-## Install key and setup R repo at CRAN
-        && add-apt-repository ppa:marutter/rrutter4.0 \
+                dirmngr \
+                gpg \
+                gpg-agent \
+## Install key and setup marutter repo 
+        && gpg --keyserver keyserver.ubuntu.com --recv-keys C8E868340AE02417DCF76B51F2B6E89C389782D0 \
+        && gpg --export --armor C8E868340AE02417DCF76B51F2B6E89C389782D0 > /etc/apt/trusted.gpg.d/marutter_key.asc \
+        && echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/marutter_key.asc] https://ppa.launchpadcontent.net/marutter/rrutter4.0/ubuntu noble main" > /etc/apt/sources.list.d/marutter_ppa.list \
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
         && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
 	&& locale-gen en_US.utf8 \
 	&& /usr/sbin/update-locale LANG=en_US.UTF-8
-
-#        && wget -q -O - https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
-#                | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc  \
-#        && echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/cran_ubuntu_key.asc] https://ppa.launchpadcontent.net/marutter/rrutter4.0/ubuntu noble main" \
-#                > /etc/apt/sources.list.d/marutter_ppa.list \
-
 
 ## Set some variables
 ENV LC_ALL=en_US.UTF-8

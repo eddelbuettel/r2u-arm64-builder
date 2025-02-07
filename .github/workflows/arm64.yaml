@@ -38,6 +38,11 @@ jobs:
       - name: Container build
         run: |
           docker build -t rocker/r2u:test .
+
+      - name: Container test
+        run: |
+          docker run --rm rocker/r2u:test Rscript --version
+          docker run --rm rocker/r2u:test Rscript -e "installed.packages()"
          
       #- name: Buildx
       #  uses: docker/setup-buildx-action@v3
