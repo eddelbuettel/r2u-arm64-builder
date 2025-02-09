@@ -37,6 +37,7 @@ jobs:
 
       - name: Container build
         run: |
+          cd r-ubuntu
           docker build -t rocker/r2u:test .
 
       - name: Container test
