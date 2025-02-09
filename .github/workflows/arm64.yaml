@@ -14,11 +14,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Container build
-        run: |
-          cd r2u-builder
-          ls -l
-          docker build -t rocker/r2u:build .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: r2u-builder
+          tags: eddelbuettel/r2u_build:noble
 
   ## original initial job
   update:
