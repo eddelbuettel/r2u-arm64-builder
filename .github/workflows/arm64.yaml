@@ -9,8 +9,31 @@ on:
   workflow_dispatch:
 
 jobs:
+  build_package:
+    runs-on: ubuntu-24.04-arm
+    container:
+      image: eddelbuettel/r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install remotes
+        run: install.r remotes
+      - name: Install docker
+        run: |
+          apt update -qq
+          apt install --yes --no-install-recommends docker.io r-cran-data.table r-cran-crayon
+      - name: Install r2u
+        run: |
+          r -e 'if (!dir.exists(tools::R_user_dir("r2u"))) dir.create(tools::R_user_dir("r2u"), recursive=TRUE)'
+          installGithub.r eddelbuettel/r2u
+          r -pe 'dir(tools::R_user_dir("r2u"))'
+        env:
+          GITHUB_PAT: ${{ secrets.PAT_GITHUB }}
+          
+        
   create_builder:
     runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
