@@ -9,42 +9,47 @@ on:
   workflow_dispatch:
 
 jobs:
-  update:
+  create_builder:
     runs-on: ubuntu-24.04-arm
-
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Container build
+        run: |
+          cd r2u-builder
+          ls -l
+          docker build -t rocker/r2u:build .
 
+  ## original initial job
+  update:
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Status
         run: |
           uname -a
           cat /proc/cpuinfo
           docker version
           docker info
-
       #- name: Container r-base
       #  run: |
       #    docker pull r-base
       #    docker run --rm r-base R -q -e 'R.version'
-
       #- name: Container ubuntu:noble
       #  run: |
       #    docker pull ubuntu:noble
       #    docker run --rm ubuntu:noble uname -a
       #    docker run --rm ubuntu:noble bash -c 'apt update -q; apt install -y dpkg-dev; dpkg-architecture'
-
       - name: Container build
         run: |
           cd r-ubuntu
           docker build -t rocker/r2u:test .
-
       - name: Container test
         run: |
           docker run --rm rocker/r2u:test Rscript --version
           docker run --rm rocker/r2u:test Rscript -e "installed.packages()"
-         
       #- name: Buildx
       #  uses: docker/setup-buildx-action@v3
       
