@@ -16,19 +16,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install remotes
-        run: install.r remotes
-      - name: Install docker
+      - name: Install R packages
         run: |
           apt update -qq
-          apt install --yes --no-install-recommends docker.io r-cran-data.table r-cran-crayon
+          apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon
+      - name: Install docker
+        run: |
+          apt install --yes --no-install-recommends docker.io
       - name: Install r2u
         run: |
           r -e 'if (!dir.exists(tools::R_user_dir("r2u"))) dir.create(tools::R_user_dir("r2u"), recursive=TRUE)'
-          installGithub.r eddelbuettel/r2u
+          installGithub.r --update FALSE eddelbuettel/r2u
           r -pe 'dir(tools::R_user_dir("r2u"))'
         env:
           GITHUB_PAT: ${{ secrets.PAT_GITHUB }}
+      - name: Test docker
+        run: |
+          docker version
+          docker info
           
         
   create_builder:
