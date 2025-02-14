@@ -20,9 +20,6 @@ jobs:
         run: |
           apt update -qq
           apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon
-      - name: Install docker
-        run: |
-          apt install --yes --no-install-recommends docker.io
       - name: Install r2u
         run: |
           r -e 'if (!dir.exists(tools::R_user_dir("r2u"))) dir.create(tools::R_user_dir("r2u"), recursive=TRUE)'
@@ -30,11 +27,6 @@ jobs:
           r -pe 'dir(tools::R_user_dir("r2u"))'
         env:
           GITHUB_PAT: ${{ secrets.PAT_GITHUB }}
-      - name: Test docker
-        run: |
-          docker version
-          docker info
-          
         
   create_builder:
     runs-on: ubuntu-24.04-arm
