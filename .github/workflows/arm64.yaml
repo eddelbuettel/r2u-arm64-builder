@@ -19,15 +19,33 @@ jobs:
       - name: Install R packages
         run: |
           apt update -qq
-          apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon
+          apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon wget
       - name: Install r2u
         run: |
-          r -e 'if (!dir.exists(tools::R_user_dir("r2u"))) dir.create(tools::R_user_dir("r2u"), recursive=TRUE)'
+          #r -e 'if (!dir.exists(tools::R_user_dir("r2u"))) dir.create(tools::R_user_dir("r2u"), recursive=TRUE)'
           installGithub.r --update FALSE eddelbuettel/r2u
+          r -e 'r2u:::.createDefaultConfiguration()'
           r -pe 'dir(tools::R_user_dir("r2u"))'
         env:
           GITHUB_PAT: ${{ secrets.PAT_GITHUB }}
-        
+      - name: Update littler (until CRAN update)
+        run: |
+          r -e "install.packages('littler', repos = c('https://eddelbuettel.r-universe.dev', 'https://cloud.r-project.org'))"
+          cd /usr/local/bin
+          ln -sf /usr/local/lib/R/site-library/littler/examples/r2u.r .
+          r2u.r --help
+      - name: Check /mnt
+        run: |
+          ls -lR /mnt
+          ls -lR /var/local/r2u
+          cd /usr/local/bin
+          rm -v debBuild.sh
+          wget https://dirk.eddelbuettel.com/tmp/debBuild.sh
+          chmod 0755 debBuild.sh
+      - name: Build
+        run: |
+          r2u.r -c -f -d -v -r noble package zigg
+          
   create_builder:
     runs-on: ubuntu-24.04-arm
     if: github.repository != 'eddelbuettel/gha_noodling'
