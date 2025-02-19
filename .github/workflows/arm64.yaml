@@ -8,10 +8,40 @@ on:
   release:
   workflow_dispatch:
 
+## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
+## jq -cn --argjson environments "$TARGETS" '{target: $environments}'
+    
 jobs:
-  build_package:
+  ssh_tests:
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
+    container:
+      image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup ssh
+        ## NB Does only work with outgoing port 22
+        run: |
+          apt update -qq
+          apt install --yes --no-install-recommends openssh-client
+          eval $(ssh-agent -s)
+          ssh-add <(echo "$GHA_DEPLOY_PRIVATE_KEY")
+          ssh-keyscan -t rsa "$GHA_DEPLOY_SERVER_HOSTNAME"
+          date > now.txt
+          hostname >> now.txt
+          #scp -v -oStrictHostKeyChecking=no now.txt "$GHA_DEPLOY_SERVER_DESTINATION"
+          date >> now.txt
+          cat now.txt
+          echo Done
+        env:
+          GHA_DEPLOY_PRIVATE_KEY: ${{ secrets.GHA_DEPLOY_PRIVATE_KEY }}
+          GHA_DEPLOY_SERVER_HOSTNAME: ${{ secrets.GHA_DEPLOY_SERVER_HOSTNAME }}
+          GHA_DEPLOY_SERVER_DESTINATION: ${{ secrets.GHA_DEPLOY_SERVER_DESTINATION }}
+          
+  build_package:
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     steps:
