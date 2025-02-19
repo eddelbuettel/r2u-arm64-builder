@@ -5,43 +5,16 @@ name: arm64
 on:
   push:
   pull_request:
-  release:
+  #release:
   workflow_dispatch:
 
 ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
 ## jq -cn --argjson environments "$TARGETS" '{target: $environments}'
     
 jobs:
-  ssh_tests:
-    runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
-    container:
-      image: eddelbuettel/gha_r2u_build:noble
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup ssh
-        ## NB Does only work with outgoing port 22
-        run: |
-          apt update -qq
-          apt install --yes --no-install-recommends openssh-client
-          eval $(ssh-agent -s)
-          ssh-add <(echo "$GHA_DEPLOY_PRIVATE_KEY")
-          ssh-keyscan -t rsa "$GHA_DEPLOY_SERVER_HOSTNAME"
-          date > now.txt
-          hostname >> now.txt
-          #scp -v -oStrictHostKeyChecking=no now.txt "$GHA_DEPLOY_SERVER_DESTINATION"
-          date >> now.txt
-          cat now.txt
-          echo Done
-        env:
-          GHA_DEPLOY_PRIVATE_KEY: ${{ secrets.GHA_DEPLOY_PRIVATE_KEY }}
-          GHA_DEPLOY_SERVER_HOSTNAME: ${{ secrets.GHA_DEPLOY_SERVER_HOSTNAME }}
-          GHA_DEPLOY_SERVER_DESTINATION: ${{ secrets.GHA_DEPLOY_SERVER_DESTINATION }}
-          
   build_package:
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     steps:
@@ -50,7 +23,45 @@ jobs:
       - name: Build
         run: |
           r -e 'r2u:::.createDefaultConfiguration()'
-          r2u.r -c -f -d -v -r noble package zigg
+          r2u.r -c -f -r noble package zigg
+          r2u.r -c -f -r noble package cli
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: /var/local/r2u/ubuntu/pool/dists/noble/main/*deb
+          make_latest: true
+          prerelease: true
+          tag_name: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+
+  ssh_tests:
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
+    # NB Cannot use container as eval step of ssh-agent fails. Maybe needs tty ?
+    #container:
+    #  image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup ssh
+        run: |
+          sudo apt update -qq
+          sudo apt install --yes --no-install-recommends openssh-client
+          eval $(ssh-agent -s)
+          ssh-add <(echo "$GHA_DEPLOY_PRIVATE_KEY")
+          ssh-keyscan -t rsa "$GHA_DEPLOY_SERVER_HOSTNAME"
+          date > now.txt
+          hostname >> now.txt
+          ## NB Does only work with outgoing port 22
+          #scp -v -oStrictHostKeyChecking=no now.txt "$GHA_DEPLOY_SERVER_DESTINATION"
+          date >> now.txt
+          cat now.txt
+          echo Done
+        env:
+          GHA_DEPLOY_PRIVATE_KEY: ${{ secrets.GHA_DEPLOY_PRIVATE_KEY }}
+          GHA_DEPLOY_SERVER_HOSTNAME: ${{ secrets.GHA_DEPLOY_SERVER_HOSTNAME }}
+          GHA_DEPLOY_SERVER_DESTINATION: ${{ secrets.GHA_DEPLOY_SERVER_DESTINATION }}         
           
   build_package_initial:
     runs-on: ubuntu-24.04-arm
