@@ -21,9 +21,10 @@ RUN rm -f /etc/apt/sources.list.d/edd-ubuntu-misc-jammy.list \
 COPY r2u_0.0.9.tar.gz /tmp
 COPY r2u.r /usr/local/bin/
 
+## Need GH version of RcppAPT for recent fix
 RUN R CMD INSTALL /tmp/r2u_0.0.9.tar.gz \
     && rm -v /tmp/r2u_0.0.9.tar.gz \
     && r -e 'r2u:::.createDefaultConfiguration()' \
-    && install.r RcppAPT
+    && installGithub.r eddelbuettel/RcppAPT
 
 CMD ["bash"]
