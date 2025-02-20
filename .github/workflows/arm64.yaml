@@ -12,7 +12,49 @@ on:
 ## jq -cn --argjson environments "$TARGETS" '{target: $environments}'
     
 jobs:
-  build_package:
+  setup:
+    runs-on: ubuntu-24.04-arm
+    if: github.repository == 'eddelbuettel/gha_noodling'
+    container:
+      image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Crete Config and Cache
+        run: |
+          r -e 'r2u:::.createDefaultConfiguration()'
+          r -e 'r2u:::.loadDB()'
+          r -e 'r2u:::.loadAP()'
+      - name: Show Config
+        run: |
+          Rscript -e 'print(tools::R_user_dir("r2u"))'
+          ls -l ~/.local/share/R/r2u
+      - name: Upload Config
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: r2u_config
+          path: ~/.local/share/R/r2u
+
+  checkconfig:
+    needs: setup
+    runs-on: ubuntu-24.04-arm
+    if: github.repository == 'eddelbuettel/gha_noodling'
+    container:
+      image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Get Config
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: r2u_config
+          path: ~/.local/share/R/r2u
+      - name: Show Config
+        run: |
+          Rscript -e 'print(tools::R_user_dir("r2u"))'
+          ls -l ~/.local/share/R/r2u
+          Rscript -e 'system.time(library(r2u))'
+         
+        
+  build_package_take_two:
     runs-on: ubuntu-24.04-arm
     if: github.repository != 'eddelbuettel/gha_noodling'
     container:
@@ -23,8 +65,8 @@ jobs:
       - name: Build
         run: |
           r -e 'r2u:::.createDefaultConfiguration()'
-          r2u.r -c -f -r noble package zigg
-          r2u.r -c -f -r noble package cli
+          r2u.r -c -f -r noble package rlang
+          r2u.r -c -f -r noble package glue
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
@@ -94,7 +136,7 @@ jobs:
           
   create_gha_builder:
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository != 'eddelbuettel/gha_noodling'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
