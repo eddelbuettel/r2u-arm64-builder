@@ -34,7 +34,7 @@ jobs:
   build_one_package:
     needs: setup
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository != 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     steps:
@@ -55,9 +55,9 @@ jobs:
           path: /var/local/r2u/ubuntu/pool/dists/noble/main/
           
   make_matrix:
-    #needs: setup
+    needs: setup
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     outputs:
       runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
     steps:  
@@ -77,9 +77,9 @@ jobs:
   #    - run: echo ${{ matrix.target }}
           
   build_package:
-    #needs: make_matrix
+    needs: make_matrix
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
