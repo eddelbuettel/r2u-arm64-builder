@@ -39,8 +39,9 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '["farver", "mime", "base64enc", "rappdirs", "isoband", "sys", "stringi", "bit", "ps", "commonmark"]')
+          TARGETS=$(echo '["backports", "lazyeval", "zip", "png", "proxy", "uuid", "sourcetools", "brio", "rbibutils", "mvtnorm",  "wk", "SparseM"]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
+          # $"  "nloptr" (cmake), "XML", (libxml2)
           
   build_package:
     needs: make_matrix
@@ -66,7 +67,7 @@ jobs:
           name: deb-${{ matrix.target }}
           path: /var/local/r2u/ubuntu/pool/dists/noble/main/
           
-  release_packages:
+  release_package:
     needs: [ make_matrix, build_package ]
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
