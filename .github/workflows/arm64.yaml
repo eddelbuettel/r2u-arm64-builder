@@ -10,7 +10,7 @@ on:
 
 jobs:
   setup:
-    #needs: create_gha_builder
+    needs: create_gha_builder
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
     container:
@@ -23,8 +23,6 @@ jobs:
           r -e 'r2u:::.createDefaultConfiguration()'
           r -e 'r2u:::.loadDB()'
           r -e 'r2u:::.loadAP()'
-      - name: Show Config
-        run: ls -l ~/.local/share/R/r2u
       - name: Upload Config
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -41,7 +39,7 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '["rlang", "cli", "glue", "jsonlite"]')
+          TARGETS=$(echo '["magrittr", "Rcpp", "utf8", "fansi", "curl", "xfun"]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
@@ -78,7 +76,7 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '["rlang", "cli", "glue", "jsonlite"]')
+          TARGETS=$(echo '["magrittr", "Rcpp", "utf8", "fansi", "curl", "xfun"]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   release_packages:
@@ -106,9 +104,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
          
   create_gha_builder:
-    #needs: create_builder
+    needs: create_builder
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -128,7 +126,7 @@ jobs:
           
   create_builder:
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     steps:
       - name: Checkout
         uses: actions/checkout@v4

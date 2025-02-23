@@ -47,11 +47,10 @@ fi
 pkg="$1"
 lcpkg=$(echo "${pkg}" | tr '[A-Z]' '[a-z]')
 
-#if [ "${aptpkgs}" != "" ]; then
-#    echo "192.168.1.114 dirk.eddelbuettel.com" >> /etc/hosts
-#    apt update -qq
-#    apt install --yes --no-install-recommends ${aptpkgs}
-#fi
+if [ "${aptpkgs}" != "" ]; then
+    apt update -qq
+    apt install --yes --no-install-recommends ${aptpkgs}
+fi
 
 if [ "${source}" = "yes" ]; then
     if [ ! -d ${r2udir}/build/${dist}/${pkg}/src ]; then
