@@ -12,8 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ## Packages needed for r2u,
 ## and for docker which r2u checks for even though we do not use it here
 ## and for libapt-pkg-dev as we need to force a reinstallation of RcppAPT
-RUN rm -f /etc/apt/sources.list.d/edd-ubuntu-misc-jammy.list \
-    && apt update -qq \
+RUN apt update -qq \
     && apt upgrade --yes \
     && apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon docker.io libapt-pkg-dev
 

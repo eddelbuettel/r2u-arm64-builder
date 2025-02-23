@@ -8,9 +8,6 @@ on:
   #release:
   workflow_dispatch:
 
-## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
-## jq -cn --argjson environments "$TARGETS" '{target: $environments}'
-    
 jobs:
   setup:
     runs-on: ubuntu-24.04-arm
@@ -25,23 +22,50 @@ jobs:
           r -e 'r2u:::.createDefaultConfiguration()'
           r -e 'r2u:::.loadDB()'
           r -e 'r2u:::.loadAP()'
-      #- name: Show Config
-      #  run: |
-      #    Rscript -e 'print(tools::R_user_dir("r2u"))'
-      #    ls -l ~/.local/share/R/r2u
+      - name: Show Config
+        run: ls -l ~/.local/share/R/r2u
       - name: Upload Config
         uses: actions/upload-artifact@v4.4.0
         with:
           name: r2u_config
           path: ~/.local/share/R/r2u
 
-  make_matrix:
+  build_one_package:
     needs: setup
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
+    container:
+      image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get Config
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: r2u_config
+          path: ~/.local/share/R/r2u
+      - name: Build
+        run:  |
+          apt update -qq
+          apt install --yes --no-install-recommends curl
+          curl -OLs https://dirk.eddelbuettel.com/tmp/debBuild.sh
+          chmod 0755 debBuild.sh
+          cp debBuild.sh /usr/local/bin
+          r2u.r -v -d -c -f -r noble package cli
+      - name: Upload Deb
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: deb-${{ matrix.target }}
+          path: /var/local/r2u/ubuntu/pool/dists/noble/main/
+          
+  make_matrix:
+    #needs: setup
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
     outputs:
       runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
     steps:  
+      ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
           TARGETS=$(echo '["rlang", "cli", "glue", "jsonlite"]')
@@ -56,10 +80,10 @@ jobs:
   #  steps:
   #    - run: echo ${{ matrix.target }}
           
-  build_packages:
-    needs: make_matrix
+  build_package:
+    #needs: make_matrix
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository != 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
@@ -73,15 +97,15 @@ jobs:
           name: r2u_config
           path: ~/.local/share/R/r2u
       - name: Build
-        run:  r2u.r -c -f -r noble package ${{ matrix.target }}
+        run:  r2u.r -v -d -c -f -r noble package ${{ matrix.target }}
       - name: Upload Deb
         uses: actions/upload-artifact@v4.4.0
         with:
           name: deb-${{ matrix.target }}
-          path: ~/.local/share/R/r2u
+          path: /var/local/r2u/ubuntu/pool/dists/noble/main/
 
   release_packages:
-    #needs: build_packages
+    #needs: build_package
     runs-on: ubuntu-24.04-arm
     if: github.repository != 'eddelbuettel/gha_noodling'
     container:
@@ -93,7 +117,7 @@ jobs:
         uses: actions/download-artifact@v4.1.8
         with:
           name: deb-${{ matrix.target }}
-          path: ~/.local/share/R/r2u
+          path: /var/local/r2u/ubuntu/pool/dists/noble/main/
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
