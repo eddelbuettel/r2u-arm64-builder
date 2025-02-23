@@ -14,28 +14,29 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      #- name: Crete Config and Cache
+      - name: Crete Config and Cache
+        run: |
+          r -e 'r2u:::.createDefaultConfiguration()'
+          r -e 'r2u:::.loadDB()'
+          r -e 'r2u:::.loadAP()'
+      #- name: Show Config
       #  run: |
-      #    r -e 'r2u:::.createDefaultConfiguration()'
-      #    r -e 'r2u:::.loadDB()'
-      #    r -e 'r2u:::.loadAP()'
-      ##- name: Show Config
-      ##  run: |
-      ##    Rscript -e 'print(tools::R_user_dir("r2u"))'
-      ##    ls -l ~/.local/share/R/r2u
-      #- name: Upload Config
-      #  uses: actions/upload-artifact@v4.4.0
-      #  with:
-      #    name: r2u_config
-      #    path: ~/.local/share/R/r2u
+      #    Rscript -e 'print(tools::R_user_dir("r2u"))'
+      #    ls -l ~/.local/share/R/r2u
+      - name: Upload Config
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: r2u_config
+          path: ~/.local/share/R/r2u
 
   make_matrix:
+    needs: setup
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
     outputs:
@@ -46,24 +47,23 @@ jobs:
           TARGETS=$(echo '["rlang", "cli", "glue", "jsonlite"]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
 
-  show_matrix:
+  #show_matrix:
+  #  needs: make_matrix
+  #  runs-on: ubuntu-24.04-arm
+  #  if: github.repository == 'eddelbuettel/gha_noodling'
+  #  strategy:
+  #    matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
+  #  steps:
+  #    - run: echo ${{ matrix.target }}
+          
+  build_packages:
     needs: make_matrix
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
-    strategy:
-      matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
-    steps:
-      - run: echo ${{ matrix.target }}
-
-          
-  build_packages:
-    #needs: setup
-    runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
-      matrix: ${{ fromJson(needs.setup.outputs.runmatrix) }}
+      matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
