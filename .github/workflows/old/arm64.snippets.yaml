@@ -1,0 +1,144 @@
+
+
+  build_one_package:
+    #needs: setup
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
+    container:
+      image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get Config
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: r2u_config
+          path: ~/.local/share/R/r2u
+      - name: Build
+        run:  |
+          r2u.r -v -d -c -f -r noble package cli
+      - name: Upload Deb
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: deb-${{ matrix.target }}
+          path: /var/local/r2u/ubuntu/pool/dists/noble/main/
+
+
+  #show_matrix:
+  #  needs: make_matrix
+  #  runs-on: ubuntu-24.04-arm
+  #  if: github.repository == 'eddelbuettel/gha_noodling'
+  #  strategy:
+  #    matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
+  #  steps:
+  #    - run: echo ${{ matrix.target }}
+          
+  checkconfig:
+    #needs: setup
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
+    container:
+      image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Get Config
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: r2u_config
+          path: ~/.local/share/R/r2u
+      #- name: Show Config
+      #  run: |
+      #    Rscript -e 'print(tools::R_user_dir("r2u"))'
+      #    ls -l ~/.local/share/R/r2u
+      #    Rscript -e 'system.time(library(r2u))'
+          
+  ssh_tests:
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
+    # NB Cannot use container as eval step of ssh-agent fails. Maybe needs tty ?
+    #container:
+    #  image: eddelbuettel/gha_r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup ssh
+        run: |
+          sudo apt update -qq
+          sudo apt install --yes --no-install-recommends openssh-client
+          eval $(ssh-agent -s)
+          ssh-add <(echo "$GHA_DEPLOY_PRIVATE_KEY")
+          ssh-keyscan -t rsa "$GHA_DEPLOY_SERVER_HOSTNAME"
+          date > now.txt
+          hostname >> now.txt
+          ## NB Does only work with outgoing port 22
+          #scp -v -oStrictHostKeyChecking=no now.txt "$GHA_DEPLOY_SERVER_DESTINATION"
+          date >> now.txt
+          cat now.txt
+          echo Done
+        env:
+          GHA_DEPLOY_PRIVATE_KEY: ${{ secrets.GHA_DEPLOY_PRIVATE_KEY }}
+          GHA_DEPLOY_SERVER_HOSTNAME: ${{ secrets.GHA_DEPLOY_SERVER_HOSTNAME }}
+          GHA_DEPLOY_SERVER_DESTINATION: ${{ secrets.GHA_DEPLOY_SERVER_DESTINATION }}         
+          
+  build_package_initial:
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
+    container:
+      image: eddelbuettel/r2u_build:noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install R packages
+        run: |
+          apt update -qq
+          apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon
+      - name: Install r2u
+        run: |
+          installGithub.r --update FALSE eddelbuettel/r2u
+          r -e 'r2u:::.createDefaultConfiguration()'
+          r -pe 'dir(tools::R_user_dir("r2u"))'
+        env:
+          GITHUB_PAT: ${{ secrets.PAT_GITHUB }}
+      - name: Update littler (until CRAN update)
+        run: |
+          r -e "install.packages('littler', repos = c('https://eddelbuettel.r-universe.dev', 'https://cloud.r-project.org'))"
+          cd /usr/local/bin 
+          ln -sf /usr/local/lib/R/site-library/littler/examples/r2u.r .
+          r2u.r --help
+      - name: Build
+        run: |
+          r2u.r -c -f -d -v -r noble package zigg
+
+
+            ## original initial job
+  update:
+    runs-on: ubuntu-24.04-arm
+    if: github.repository != 'eddelbuettel/gha_noodling'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Status
+        run: |
+          uname -a
+          cat /proc/cpuinfo
+          docker version
+          docker info
+      #- name: Container r-base
+      #  run: |
+      #    docker pull r-base
+      #    docker run --rm r-base R -q -e 'R.version'
+      #- name: Container ubuntu:noble
+      #  run: |
+      #    docker pull ubuntu:noble
+      #    docker run --rm ubuntu:noble uname -a
+      #    docker run --rm ubuntu:noble bash -c 'apt update -q; apt install -y dpkg-dev; dpkg-architecture'
+      - name: Container build
+        run: |
+          cd r-ubuntu
+          docker build -t rocker/r2u:test .
+      - name: Container test
+        run: |
+          docker run --rm rocker/r2u:test Rscript --version
+          docker run --rm rocker/r2u:test Rscript -e "installed.packages()"
+      #- name: Buildx
+      #  uses: docker/setup-buildx-action@v3
+      
