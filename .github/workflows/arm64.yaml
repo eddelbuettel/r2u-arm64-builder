@@ -39,7 +39,7 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '["digest", "fs", "data.table", "fastmap", "colorspace", "yaml"]')
+          TARGETS=$(echo '["farver", "mime", "base64enc", "rappdirs", "isoband", "sys", "stringi", "bit", "ps", "commonmark"]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
@@ -65,28 +65,15 @@ jobs:
         with:
           name: deb-${{ matrix.target }}
           path: /var/local/r2u/ubuntu/pool/dists/noble/main/
-
-  make_second_matrix:
-    needs: build_package
-    runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
-    outputs:
-      runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
-    steps:  
-      ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
-      - id: makematrixstep
-        run: |
-          TARGETS=$(echo '["digest", "fs", "data.table", "fastmap", "colorspace", "yaml"]')
-          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   release_packages:
-    needs: make_second_matrix
+    needs: [ make_matrix, build_package ]
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
-      matrix: ${{ fromJson(needs.make_second_matrix.outputs.runmatrix) }}
+      matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
     steps:
       - name: Get Deb
         uses: actions/download-artifact@v4.1.8
@@ -103,44 +90,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
          
-  create_gha_builder:
-    #needs: create_builder
-    runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          context: gha-r2u-builder
-          tags: eddelbuettel/gha_r2u_build:noble
-          
-  create_builder:
-    runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          context: r2u-builder
-          tags: eddelbuettel/r2u_build:noble
 

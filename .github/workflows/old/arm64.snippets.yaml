@@ -24,6 +24,20 @@
           path: /var/local/r2u/ubuntu/pool/dists/noble/main/
 
 
+
+  make_second_matrix:
+    needs: build_package
+    runs-on: ubuntu-24.04-arm
+    if: github.repository == 'eddelbuettel/gha_noodling'
+    outputs:
+      runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
+    steps:  
+      ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
+      - id: makematrixstep
+        run: |
+          TARGETS=$(echo '["digest", "fs", "data.table", "fastmap", "colorspace", "yaml"]')
+          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
+          
   #show_matrix:
   #  needs: make_matrix
   #  runs-on: ubuntu-24.04-arm
