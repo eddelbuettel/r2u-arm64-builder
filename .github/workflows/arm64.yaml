@@ -10,7 +10,6 @@ on:
 
 jobs:
   setup:
-    #needs: create_gha_builder
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
     container:
@@ -18,11 +17,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Crete Config and Cache
+      - name: Create Default Config and Cache
         run: |
           r -e 'r2u:::.createDefaultConfiguration()'
           r -e 'r2u:::.loadDB()'
           r -e 'r2u:::.loadAP()'
+      - name: Fetch Updated Config
+        uses: actions/checkout@v4
+        with:
+          repository: eddelbuettel/r2u-config
+          path: r2u-config
+      - name: Copy Updated Config
+        run: |
+          cp -vax r2u-config/* ~/.local/share/R/r2u
       - name: Upload Config
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -39,9 +46,8 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '["backports", "lazyeval", "zip", "png", "proxy", "uuid", "sourcetools", "brio", "rbibutils", "mvtnorm",  "wk", "SparseM"]')
+          TARGETS=$(echo '["nloptr", "XML"]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
-          # $"  "nloptr" (cmake), "XML", (libxml2)
           
   build_package:
     needs: make_matrix

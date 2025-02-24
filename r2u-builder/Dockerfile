@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN rm -f /etc/apt/sources.list.d/edd-ubuntu-misc-jammy.list \
     && apt update -qq \
     && apt upgrade --yes \
-    && apt install --yes --no-install-recommends dh-r gpg-agent xvfb 
+    && apt install --yes --no-install-recommends dh-r gpg-agent xvfb git
 
 COPY debBuild.sh /usr/local/bin
 COPY r2u.sources /etc/apt/sources.list.d
