@@ -46,7 +46,7 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '["RcppEigen","RcppArmadillo","plyr","diffobj","minqa","units","checkmate","RcppTOML","sp","RCurl","terra","ellipsis","nlme","Matrix","caTools"]')
+          TARGETS=$(echo '["cachem","processx","openssl","xml2","later","xts","s2","lmtest","survival","pROC","urca","hunspell"]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           # $"
           
@@ -81,6 +81,7 @@ jobs:
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
     steps:
       - name: Get Deb
