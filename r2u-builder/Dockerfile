@@ -16,7 +16,7 @@ RUN rm -f /etc/apt/sources.list.d/edd-ubuntu-misc-jammy.list \
 
 COPY debBuild.sh /usr/local/bin
 COPY r2u.sources /etc/apt/sources.list.d
-COPY 99cranapt /etc/apt/preferences.d
+COPY 99pinning /etc/apt/preferences.d
 
 RUN apt update -qq && apt upgrade --yes
 

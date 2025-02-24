@@ -365,4 +365,4 @@ Signed-By: -----BEGIN PGP PUBLIC KEY BLOCK-----
  =VuA5
  -----END PGP PUBLIC KEY BLOCK-----
 Enabled: yes
-Architectures: amd64
+Architectures: amd64 arm64
