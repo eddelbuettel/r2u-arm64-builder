@@ -35,6 +35,17 @@ jobs:
         with:
           name: r2u_config
           path: ~/.local/share/R/r2u
+      - name: Script
+        run: |
+          cd /tmp
+          Rscript -e 'download.file("https://dirk.eddelbuettel.com/tmp/ghascript.R", "ghascript.R", quiet=TRUE)'
+          Rscript ghascript.R
+          ls -l /tmp/*.txt
+      - name: Upload Package Set
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: package_set
+          path: /tmp/P.txt
           
   make_matrix:
     needs: setup
@@ -42,18 +53,28 @@ jobs:
     if: github.repository == 'eddelbuettel/gha_noodling'
     outputs:
       runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
-    steps:  
+    steps:
+      - name: Get Package Set
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: package_set
+          path: /tmp
+      - name: Show Package Set
+        run: cat /tmp/P.txt
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '[ "readr","testthat","ipred" ]')
-          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
+          TARGETS=$(cat /tmp/P.txt)
+          echo "TARGETS is '$TARGETS'"
+          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
           # $"
+          #TARGETS=$(echo '[ "readr","testthat","ipred" ]')
+          #echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
     needs: make_matrix
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository != 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
@@ -77,7 +98,7 @@ jobs:
   release_package:
     needs: [ make_matrix, build_package ]
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository != 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
