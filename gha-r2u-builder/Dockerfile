@@ -17,12 +17,14 @@ RUN apt update -qq \
     && apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon docker.io libapt-pkg-dev
 
 ## Update r2u.r script until littler is updated
-COPY r2u_0.0.9.tar.gz /tmp
+#COPY r2u_0.0.9.tar.gz /tmp
 COPY r2u.r /usr/local/bin/
 
 ## Need GH version of RcppAPT for recent fix
-RUN R CMD INSTALL /tmp/r2u_0.0.9.tar.gz \
-    && rm -v /tmp/r2u_0.0.9.tar.gz \
+#RUN R CMD INSTALL /tmp/r2u_0.0.9.tar.gz \
+#    && rm -v /tmp/r2u_0.0.9.tar.gz
+#RUN R CMD INSTALL /tmp/r2u_0.0.9.tar.gz \
+RUN installGithub.r eddelbuettel/r2u \
     && r -e 'r2u:::.createDefaultConfiguration()' \
     && installGithub.r eddelbuettel/RcppAPT
 
