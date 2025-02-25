@@ -46,7 +46,7 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(echo '[ "tidyselect","purrr","systemfonts","promises","httpuv","quantreg","classInt","clock","sparsevctrs","svglite" ]')
+          TARGETS=$(echo '[ "sass","ragg","textshaping","igraph","reshape2","glmnet","gert","tseries" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           # $"
           
