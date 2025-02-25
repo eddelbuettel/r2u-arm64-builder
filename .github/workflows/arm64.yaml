@@ -35,12 +35,10 @@ jobs:
         with:
           name: r2u_config
           path: ~/.local/share/R/r2u
-      - name: Script
+      - name: Compute Package Set
         run: |
-          cd /tmp
-          Rscript -e 'download.file("https://dirk.eddelbuettel.com/tmp/ghascript.R", "ghascript.R", quiet=TRUE)'
-          Rscript ghascript.R
-          ls -l /tmp/*.txt
+          Rscript -e 'r2u:::getBuildTargets("/tmp/P.txt", 200, TRUE)'
+          cat /tmp/P.txt
       - name: Upload Package Set
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -74,7 +72,7 @@ jobs:
   build_package:
     needs: make_matrix
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
@@ -98,7 +96,7 @@ jobs:
   release_package:
     needs: [ make_matrix, build_package ]
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/gha_noodling'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
