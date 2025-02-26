@@ -37,7 +37,7 @@ jobs:
           path: ~/.local/share/R/r2u
       - name: Compute Package Set
         run: |
-          Rscript -e 'options(width=140); r2u::getBuildTargets("/tmp/P.txt", 300, TRUE)'
+          Rscript -e 'options(width=140); r2u::getBuildTargets("/tmp/P.txt", 500, 25, TRUE)'
           cat /tmp/P.txt
       - name: Upload Package Set
         uses: actions/upload-artifact@v4.4.0
