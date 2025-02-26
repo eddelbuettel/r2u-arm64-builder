@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ## and for libapt-pkg-dev as we need to force a reinstallation of RcppAPT
 RUN apt update -qq \
     && apt upgrade --yes \
-    && apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon docker.io libapt-pkg-dev
+    && apt install --yes --no-install-recommends r-cran-remotes r-cran-data.table r-cran-crayon docker.io libapt-pkg-dev links
 
 ## Update r2u.r script until littler is updated
 #COPY r2u_0.0.9.tar.gz /tmp
