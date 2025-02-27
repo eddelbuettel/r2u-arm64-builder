@@ -78,6 +78,7 @@ jobs:
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
     steps:
       - name: Checkout
@@ -89,6 +90,8 @@ jobs:
           path: ~/.local/share/R/r2u
       - name: Build
         run:  r2u.r -v -d -c -f -r noble package ${{ matrix.target }}
+      - name: Check
+        run:  test -f /var/local/r2u/ubuntu/pool/dists/noble/main/*.deb
       - name: Upload Deb
         uses: actions/upload-artifact@v4.4.0
         with:
