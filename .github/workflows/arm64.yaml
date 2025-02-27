@@ -66,7 +66,8 @@ jobs:
           #echo "TARGETS is '$TARGETS'"
           #echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
           # $"
-          TARGETS=$(echo '[ "fcl", "RcppZiggurat" ]')
+          TARGETS=$(echo '[ "Rfast", "DEoptim", "nanoarrow" ]')
+          #TARGETS=$(echo '[ "fcl", "RcppZiggurat" ]')
           #TARGETS=$(echo '[ "ymd", "RcppGSL", "websocket" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
