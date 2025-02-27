@@ -62,14 +62,15 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(cat /tmp/P.txt)
-          echo "TARGETS is '$TARGETS'"
-          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
+          #TARGETS=$(cat /tmp/P.txt)
+          #echo "TARGETS is '$TARGETS'"
+          #echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
           # $"
           #TARGETS=$(echo '[ "Rfast", "DEoptim", "nanoarrow" ]')
           #TARGETS=$(echo '[ "fcl", "RcppZiggurat" ]')
           #TARGETS=$(echo '[ "ymd", "RcppGSL", "websocket" ]')
-          #echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
+          TARGETS=$(echo '[ "ring" ]')
+          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
     needs: make_matrix
