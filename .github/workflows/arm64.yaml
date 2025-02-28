@@ -38,7 +38,6 @@ jobs:
       - name: Compute Package Set
         run: |
           Rscript -e 'options(width=200); r2u::getBuildTargets("/tmp/P.txt", 2500, 25, TRUE)'
-          cat /tmp/P.txt
       - name: Upload Package Set
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -62,9 +61,9 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(cat /tmp/P.txt)
-          echo "TARGETS is '$TARGETS'"
-          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
+          #TARGETS=$(cat /tmp/P.txt)
+          #echo "TARGETS is '$TARGETS'"
+          #echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
           # $"
           #TARGETS=$(echo '[ "Rfast", "DEoptim", "nanoarrow" ]')
           #TARGETS=$(echo '[ "fcl", "RcppZiggurat" ]')
@@ -74,7 +73,8 @@ jobs:
           #TARGETS=$(echo '[ "ctypesio" ]')
           #TARGETS=$(echo '[ "RobustGaSP" ]')
           #TARGETS=$(echo '[ "simStateSpace" ]')
-          #echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
+          TARGETS=$(echo '[ "Tinflex" ]')
+          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
     needs: make_matrix
@@ -93,6 +93,14 @@ jobs:
         with:
           name: r2u_config
           path: ~/.local/share/R/r2u
+      - name: Fetch Updated Config
+        uses: actions/checkout@v4
+        with:
+          repository: eddelbuettel/r2u-config
+          path: r2u-config
+      - name: Copy Updated depends.dcf
+        run: |
+          cp -vax r2u-config/depends.dcf ~/.local/share/R/r2u
       - name: Build
         run:  r2u.r -v -d -c -f -r noble package ${{ matrix.target }}
       - name: Check
