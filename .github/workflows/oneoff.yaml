@@ -68,7 +68,8 @@ jobs:
           #TARGETS=$(echo '[ "fICA", "bnlearn" ]')
           #TARGETS=$(echo '[ "CaseCohortCoxSurvival", "DriftBurstHypothesis", "strucchangeRcpp" ]')
           #TARGETS=$(echo '[ "Rfast" ]')
-          TARGETS=$(echo '[ "tdata" ]')
+          #TARGETS=$(echo '[ "tdata" ]')
+          TARGETS=$(echo '[ "lowpassFilter", "dbarts" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
