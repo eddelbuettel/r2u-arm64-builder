@@ -67,7 +67,8 @@ jobs:
           # 
           #TARGETS=$(echo '[ "fICA", "bnlearn" ]')
           #TARGETS=$(echo '[ "CaseCohortCoxSurvival", "DriftBurstHypothesis", "strucchangeRcpp" ]')
-          TARGETS=$(echo '[ "Rfast" ]')
+          #TARGETS=$(echo '[ "Rfast" ]')
+          TARGETS=$(echo '[ "tdata" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
@@ -96,7 +97,8 @@ jobs:
         run: |
           cp -vax r2u-config/depends.dcf r2u-config/blacklist.txt ~/.local/share/R/r2u
       - name: Build
-        run:  r2u.r -v -d -c -f -s .2 -r noble package ${{ matrix.target }}
+        #run:  r2u.r -v -d -c -f -s .2 -r noble package ${{ matrix.target }}
+        run:  r2u.r -v -d -c -f       -r noble package ${{ matrix.target }}
       - name: Check
         run:  test -f /var/local/r2u/ubuntu/pool/dists/noble/main/*.deb
       - name: Upload Deb
