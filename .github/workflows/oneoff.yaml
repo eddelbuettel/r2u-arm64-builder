@@ -71,7 +71,8 @@ jobs:
           #TARGETS=$(echo '[ "tdata" ]')
           #TARGETS=$(echo '[ "lowpassFilter" ]')
           #TARGETS=$(echo '[ "dbarts" ]')
-          TARGETS=$(echo '[ "GBJ" ]')
+          #TARGETS=$(echo '[ "GBJ" ]')
+          TARGETS=$(echo '[ "cctools", "comat" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
