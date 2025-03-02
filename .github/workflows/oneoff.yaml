@@ -80,7 +80,8 @@ jobs:
           #TARGETS=$(echo '[ "ExactMultinom" ]')
           #TARGETS=$(echo '[ "simts" ]')
           #TARGETS=$(echo '[ "ergm" ]')
-          TARGETS=$(echo '[ "dexter" ]')
+          #TARGETS=$(echo '[ "dexter" ]')
+          TARGETS=$(echo '[ "arcgisutils", "wv", "ess" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
