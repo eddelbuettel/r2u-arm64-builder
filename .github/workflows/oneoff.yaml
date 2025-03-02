@@ -77,8 +77,8 @@ jobs:
           #TARGETS=$(echo '[ "spAbundance" ]')
           #TARGETS=$(echo '[ "GFM" ]')
           #TARGETS=$(echo '[ "hbmem" ]')
+          #TARGETS=$(echo '[ "ExactMultinom" ]')
           TARGETS=$(echo '[ "simts" ]')
-          TARGETS=$(echo '[ "ExactMultinom" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
