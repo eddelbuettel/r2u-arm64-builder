@@ -74,7 +74,8 @@ jobs:
           #TARGETS=$(echo '[ "GBJ" ]')
           #TARGETS=$(echo '[ "cctools", "comat" ]')
           #TARGETS=$(echo '[ "frab" ]')
-          TARGETS=$(echo '[ "spAbundance" ]')
+          #TARGETS=$(echo '[ "spAbundance" ]')
+          TARGETS=$(echo '[ "GFM" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   build_package:
@@ -112,22 +113,6 @@ jobs:
         with:
           name: deb-${{ matrix.target }}
           path: /var/local/r2u/ubuntu/pool/dists/noble/main/
-          
-  release_package:
-    needs: [ make_matrix, build_package ]
-    runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
-    container:
-      image: eddelbuettel/gha_r2u_build:noble
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
-    steps:
-      - name: Get Deb
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: deb-${{ matrix.target }}
-          path: /var/local/r2u/ubuntu/pool/dists/noble/main/
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
@@ -137,5 +122,6 @@ jobs:
           tag_name: latest
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+          
          
 
