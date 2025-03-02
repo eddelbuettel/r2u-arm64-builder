@@ -75,10 +75,11 @@ jobs:
           #TARGETS=$(echo '[ "cctools", "comat" ]')
           #TARGETS=$(echo '[ "frab" ]')
           #TARGETS=$(echo '[ "spAbundance" ]')
-          TARGETS=$(echo '[ "GFM" ]')
+          #TARGETS=$(echo '[ "GFM" ]')
+          TARGETS=$(echo '[ "hbmem" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
-  build_package:
+  package:
     needs: make_matrix
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/gha_noodling'
