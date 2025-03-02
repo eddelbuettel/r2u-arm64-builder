@@ -11,7 +11,7 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     steps:
@@ -47,7 +47,7 @@ jobs:
   make_matrix:
     needs: setup
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     outputs:
       runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
     steps:
@@ -81,7 +81,7 @@ jobs:
   build_package:
     needs: make_matrix
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
@@ -116,7 +116,7 @@ jobs:
   release_package:
     needs: [ make_matrix, build_package ]
     runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/gha_noodling'
+    if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
