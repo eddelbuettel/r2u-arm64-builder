@@ -86,7 +86,8 @@ jobs:
           #TARGETS=$(echo '[ "colorfast" ]')
           #TARGETS=$(echo '[ "mniw" ]')
           #TARGETS=$(echo '[ "sphunif", "sdetorus" ]')
-          TARGETS=$(echo '[ "LatticeKrig", "sdsfun" ]')
+          #TARGETS=$(echo '[ "LatticeKrig", "sdsfun" ]')
+          TARGETS=$(echo '[ "SeqNet" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
