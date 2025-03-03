@@ -98,7 +98,8 @@ jobs:
           #TARGETS=$(echo '[ "tsgarch", "qspray" ]')
           #TARGETS=$(echo '[ "oeli", "processmapR" ]')
           #TARGETS=$(echo '[ "rofanova", "mvp", "symbolicQspray", "weights" ]')
-          TARGETS=$(echo '[ "rstiefel" ]')
+          #TARGETS=$(echo '[ "rstiefel" ]')
+          TARGETS=$(echo '[ "T4cluster" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
