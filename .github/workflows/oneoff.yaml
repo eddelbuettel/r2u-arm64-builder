@@ -82,7 +82,8 @@ jobs:
           #TARGETS=$(echo '[ "ergm" ]')
           #TARGETS=$(echo '[ "dexter" ]')
           #TARGETS=$(echo '[ "arcgisutils", "wv", "ess" ]')
-          TARGETS=$(echo '[ "POSetR", "sccore", "ijtiff" ]')
+          #TARGETS=$(echo '[ "POSetR", "sccore", "ijtiff" ]')
+          TARGETS=$(echo '[ "colorfast" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
