@@ -90,7 +90,8 @@ jobs:
           #TARGETS=$(echo '[ "SeqNet" ]')
           #TARGETS=$(echo '[ "leidenAlg" ]')
           #TARGETS=$(echo '[ "rminqa" ]')
-          TARGETS=$(echo '[ "iotarelr" ]')
+          #TARGETS=$(echo '[ "iotarelr" ]')
+          TARGETS=$(echo '[ "CMAPSS", "odeGUTS", "dcm2" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
