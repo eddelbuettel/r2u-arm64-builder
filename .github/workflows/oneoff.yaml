@@ -107,7 +107,8 @@ jobs:
           #TARGETS=$(echo '[ "cna" ]')
           #TARGETS=$(echo '[ "ICtest" ]')
           #TARGETS=$(echo '[ "qad" ]')
-          TARGETS=$(echo '[ "RDS" ]')
+          #TARGETS=$(echo '[ "RDS" ]')
+          TARGETS=$(echo '[ "dbarts" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
