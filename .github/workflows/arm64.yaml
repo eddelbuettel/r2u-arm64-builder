@@ -17,6 +17,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Create Default Config and Cache
+        run: |
+          r -e 'r2u:::.createDefaultConfiguration()'
+          r -e 'r2u:::.loadDB()'
+          r -e 'r2u:::.loadAP()'
       - name: Fetch Updated Config
         uses: actions/checkout@v4
         with:
@@ -25,14 +30,6 @@ jobs:
       - name: Copy Updated Config
         run: |
           cp -vax r2u-config/* ~/.local/share/R/r2u
-      - name: Create Default Config and Cache
-        run: |
-          r -e 'r2u:::.createDefaultConfiguration()'
-          r -e 'r2u:::.loadDB()'
-          r -e 'r2u:::.loadAP()'
-          r -e 'r2u:::.loadAP()'
-          r -e 'r2u:::.addBlacklist("24.04")'
-          r -e 'r2u:::.addBlacklist(.platform())'  # add arch blacklist (for arm64)
       - name: Upload Config
         uses: actions/upload-artifact@v4.4.0
         with:
