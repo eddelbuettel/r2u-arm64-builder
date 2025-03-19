@@ -110,7 +110,9 @@ jobs:
           #TARGETS=$(echo '[ "RDS" ]')
           #TARGETS=$(echo '[ "dbarts" ]')
           #TARGETS=$(echo '[ "nloptr" ]')
-          TARGETS=$(echo '[ "sparsevctrs" ]')
+          #TARGETS=$(echo '[ "sparsevctrs" ]')
+          #TARGETS=$(echo '[ "sparsevctrs" ]')
+          TARGETS=$(echo '[ "cluster", "survival" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
