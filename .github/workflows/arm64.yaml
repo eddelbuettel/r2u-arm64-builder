@@ -3,7 +3,7 @@
 name: arm64
 
 on:
-  push:
+  #push:
   #pull_request:
   ##release:
   workflow_dispatch:
@@ -37,7 +37,7 @@ jobs:
           path: ~/.local/share/R/r2u
       - name: Compute Package Set
         run: |
-          Rscript -e 'options(width=200); r2u::getBuildTargets("/tmp/P.txt", nbatch=40, verbose=TRUE)'
+          Rscript -e 'options(width=200); r2u::getBuildTargets("/tmp/P.txt", nbatch=40, verbose=FALSE)'
       - name: Upload Package Set
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -69,7 +69,7 @@ jobs:
   build_package:
     needs: make_matrix
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/r2u-arm64-builder'
+    if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
@@ -104,7 +104,7 @@ jobs:
   release_package:
     needs: [ make_matrix, build_package ]
     runs-on: ubuntu-24.04-arm
-    if: github.repository != 'eddelbuettel/r2u-arm64-builder'
+    if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
