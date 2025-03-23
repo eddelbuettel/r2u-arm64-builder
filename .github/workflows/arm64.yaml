@@ -90,7 +90,7 @@ jobs:
           path: r2u-config
       - name: Copy Updated depends.dcf
         run: |
-          cp -vax r2u-config/depends.dcf ~/.local/share/R/r2u
+          cp -vax r2u-config/depends.dcf r2u-config/depends.noble.dcf ~/.local/share/R/r2u
       - name: Build
         run:  r2u.r -v -d -c -f -r noble package ${{ matrix.target }}
       - name: Check
