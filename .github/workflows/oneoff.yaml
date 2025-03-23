@@ -116,7 +116,8 @@ jobs:
           #TARGETS=$(echo '[ "mime", "RadioSonde", "commonmark", "shiny" ]')
           #TARGETS=$(echo '[ "RadioSonde", "xtable" ]')
           #TARGETS=$(echo '[ "shiny" ]')
-          TARGETS=$(echo '[ "spatstat.model" ]')
+          #TARGETS=$(echo '[ "spatstat.model" ]')
+          TARGETS=$(echo '[ "bayesdfa" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
@@ -143,7 +144,7 @@ jobs:
           path: r2u-config
       - name: Copy Updated depends.dcf
         run: |
-          cp -vax r2u-config/depends.dcf r2u-config/blacklist.txt ~/.local/share/R/r2u
+          cp -vax r2u-config/depends.dcf r2u-config/depends.noble.dcf r2u-config/blacklist.txt ~/.local/share/R/r2u
       - name: Build
         #run:  r2u.r -v -d -c -f -s .2 -r noble package ${{ matrix.target }}
         run:  r2u.r -v -d -c -f       -r noble package ${{ matrix.target }}
