@@ -20,8 +20,9 @@ jobs:
       - name: Install
         run: |
           apt update
-          apt-cache policy r-cran-duckdb
-          install.r duckdb
+          apt-cache policy r-cran-arrow
+          install.r arrow
+
           
          
 
