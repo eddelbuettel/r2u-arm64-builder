@@ -118,7 +118,8 @@ jobs:
           #TARGETS=$(echo '[ "shiny" ]')
           #TARGETS=$(echo '[ "spatstat.model" ]')
           #TARGETS=$(echo '[ "bayesdfa" ]')
-          TARGETS=$(echo '[ "jpeg" ]')
+          #TARGETS=$(echo '[ "jpeg" ]')
+          TARGETS=$(echo '[ "duckdb" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
