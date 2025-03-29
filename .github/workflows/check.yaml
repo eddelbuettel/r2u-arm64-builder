@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Show sources
+        run: for f in /etc/apt/sources.list.d/*; do echo "** File is $f"; cat $f; done
       - name: Update
         run: apt update
       - name: Show apt-cache  
