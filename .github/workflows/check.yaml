@@ -20,8 +20,8 @@ jobs:
       - name: Install
         run: |
           apt update
-          apt-cache policy r-cran-digest
-          install.r digest
+          apt-cache policy r-cran-arrow
+          install.r arrow
 
           
          
