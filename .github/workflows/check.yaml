@@ -20,7 +20,7 @@ jobs:
       - name: Show sources
         run: for f in /etc/apt/sources.list.d/*; do echo "** File is $f"; cat $f; done
       - name: Modify sources
-        run: for f in /etc/apt/sources.list.d/*; do sed -i -e 's/arch=amd64/arch=amd64,arm64/' $f; done
+        run: for f in /etc/apt/sources.list.d/*; do sed -i -e 's/arch=amd64 //' $f; done
       - name: Show sources again
         run: for f in /etc/apt/sources.list.d/*; do echo "** File is $f"; cat $f; done
       - name: Update
