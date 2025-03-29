@@ -17,11 +17,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Update
+        run: apt update
+      - name: Show apt-cache  
+        run: apt-cache policy r-cran-digest
       - name: Install
-        run: |
-          apt update
-          apt-cache policy r-cran-arrow
-          install.r arrow
+        run: install.r digest
+        
 
           
          
