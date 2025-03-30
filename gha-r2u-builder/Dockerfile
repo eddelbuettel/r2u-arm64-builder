@@ -21,7 +21,7 @@ RUN apt update -qq \
 
 ## Update r2u.r script until littler is updated
 #COPY r2u_0.0.9.tar.gz /tmp
-#COPY r2u.r /usr/local/bin/
+COPY r2u.r /usr/local/bin/
 
 ## Need GH version of RcppAPT for recent fix
 #RUN R CMD INSTALL /tmp/r2u_0.0.9.tar.gz \
