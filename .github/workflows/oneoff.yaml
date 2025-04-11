@@ -119,7 +119,7 @@ jobs:
           #TARGETS=$(echo '[ "spatstat.model" ]')
           #TARGETS=$(echo '[ "bayesdfa" ]')
           #TARGETS=$(echo '[ "jpeg" ]')
-          TARGETS=$(echo '[ "duckdb" ]')
+          TARGETS=$(echo '[ "EGAnet" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           
   package:
