@@ -30,7 +30,7 @@ jobs:
       - name: Install
         run: install.r digest arrow duckdb
       - name: Load
-        run: Rscript -e 'library(arrow); library(duckdb); search()'
+        run: Rscript -e 'library(arrow); library(duckdb); search(); arrow_info()'
         
 
           
