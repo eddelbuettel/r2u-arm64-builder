@@ -101,7 +101,7 @@ jobs:
           name: deb-${{ matrix.target }}
           path: /var/local/r2u/ubuntu/pool/dists/noble/main/
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.2.2  # 2025-06-10: v2 is currently broken
         with:
           files: /var/local/r2u/ubuntu/pool/dists/noble/main/*deb
           make_latest: true

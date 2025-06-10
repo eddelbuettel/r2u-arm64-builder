@@ -121,6 +121,7 @@ jobs:
           #TARGETS=$(echo '[ "jpeg" ]')
           TARGETS=$(echo '[ "EGAnet" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
+          # "$extra_to_correct_highlighting"
           
   package:
     needs: make_matrix
