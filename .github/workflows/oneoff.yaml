@@ -119,7 +119,8 @@ jobs:
           #TARGETS=$(echo '[ "spatstat.model" ]')
           #TARGETS=$(echo '[ "bayesdfa" ]')
           #TARGETS=$(echo '[ "jpeg" ]')
-          TARGETS=$(echo '[ "EGAnet" ]')
+          #TARGETS=$(echo '[ "EGAnet" ]')
+          TARGETS=$(echo '[ "ExtremalDep" ]')
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '{target: $environments}')" >> $GITHUB_OUTPUT        
           # "$extra_to_correct_highlighting"
           
