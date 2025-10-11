@@ -41,6 +41,8 @@ jobs:
       - name: Compute Package Set Again
         run: |
           Rscript -e 'options(width=200); r2u:::.getBuildTargets(Sys.getenv("GITHUB_OUTPUT"), nbatch=40, verbose=TRUE, prefix="TARGET")'
+          echo ${GITHUB_OUTPUT}
+          test -f ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
       - name: Check last step
         run: |
           echo ${GITHUB_OUTPUT}
@@ -65,7 +67,10 @@ jobs:
       - name: Show Package Set
         run: cat /tmp/P.txt
       - name: Show Package Set Again
-        run: echo "Target var is ${TARGET}"
+        run: |
+          echo "Target var is ${TARGET}"
+          echo ${GITHUB_OUTPUT}
+          test -f ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
