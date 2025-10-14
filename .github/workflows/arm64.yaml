@@ -14,10 +14,9 @@ jobs:
     if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     container:
       image: eddelbuettel/gha_r2u_build:noble
-    #outputs:
-    #  job-targets: # so 'output.job-targets' should be id
-    #    description: 'Targets to run'
-    #    value: ${{ steps.create-targets.outputs.targets }}
+    outputs:
+      description: 'Targets to run'
+      targets_key: ${{ steps.create-targets.outputs.TARGET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,17 +40,11 @@ jobs:
           path: ~/.local/share/R/r2u
       - name: Compute Package Set
         run: |
-          Rscript -e 'options(width=200); r2u:::.getBuildTargets("/tmp/P.txt", nbatch=40, verbose=TRUE)'
-      #- name: Compute Package Set Again
-      #  id: create-targets
-      #  run: |
-      #    Rscript -e 'options(width=200); r2u:::.getBuildTargets(Sys.getenv("GITHUB_OUTPUT"), nbatch=40, verbose=TRUE, prefix="TARGET")'
-      #    echo ${GITHUB_OUTPUT}
-      #    test -f ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
-      #- name: Check last step
-      #  run: |
-      #    echo "Check filename via env.var: " ${GITHUB_OUTPUT}
-      #    echo "Check target: " ${{ steps.create-targets.outputs.targets }}
+          Rscript -e 'options(width=200);r2u:::.getBuildTargets("/tmp/P.txt",nbatch=40,verbose=TRUE)'
+      - name: Compute Package Set Again
+        id: create-targets
+        run: |
+          Rscript -e 'options(width=200);r2u:::.getBuildTargets(Sys.getenv("GITHUB_OUTPUT"),nbatch=40,verbose=TRUE,prefix="TARGET")'
       - name: Upload Package Set
         uses: actions/upload-artifact@v4.4.0
         with:
@@ -73,11 +66,10 @@ jobs:
       - name: Show Package Set
         run: cat /tmp/P.txt
       - name: Show Package Set Again
-        run: |
-          echo "Target var is ${TARGET}"
-          echo ${GITHUB_OUTPUT}
-          test -f ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
-          #echo "Check target: " ${{ steps.create-targets.outputs.targets }}
+        run: echo "Targets var is ${TARGETS}"
+        env:
+          TARGETS: ${{ needs.setup.outputs.targets_key }}
+      ## $    
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
