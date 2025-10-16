@@ -58,14 +58,14 @@ jobs:
     outputs:
       runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
     steps:
-      - name: Get Package Set
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: package_set
-          path: /tmp
+      #- name: Get Package Set
+      #  uses: actions/download-artifact@v4.1.8
+      #  with:
+      #    name: package_set
+      #    path: /tmp
+      #- name: Show Package Set
+      #  run: cat /tmp/P.txt
       - name: Show Package Set
-        run: cat /tmp/P.txt
-      - name: Show Package Set Again
         run: echo "Targets var is ${TARGETS}"
         env:
           TARGETS: ${{ needs.setup.outputs.targets_key }}
@@ -73,10 +73,13 @@ jobs:
       ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
       - id: makematrixstep
         run: |
-          TARGETS=$(cat /tmp/P.txt)
+          #TARGETS=$(cat /tmp/P.txt)
           echo "TARGETS is '$TARGETS'"
+          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" 
           echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
           # $"
+        env:
+          TARGETS: ${{ needs.setup.outputs.targets_key }}
           
   build_package:
     needs: make_matrix
