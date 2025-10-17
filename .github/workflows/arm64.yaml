@@ -81,15 +81,17 @@ jobs:
         env:
           TARGETS: ${{ needs.setup.outputs.targets_key }}
           
-  build_package:
-    needs: make_matrix
+  build_packages:
+    #needs: make_matrix
+    needs: setup
     runs-on: ubuntu-24.04-arm
     if: github.repository == 'eddelbuettel/r2u-arm64-builder'
     container:
       image: eddelbuettel/gha_r2u_build:noble
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
+      #matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.targets_key) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -153,7 +155,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
           
   # release_package:
-  #   needs: [ make_matrix, build_package ]
+  #   needs: [ make_matrix, build_packages ]
   #   runs-on: ubuntu-24.04-arm
   #   if: github.repository == 'eddelbuettel/r2u-arm64-builder'
   #   container:
