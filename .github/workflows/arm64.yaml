@@ -38,50 +38,50 @@ jobs:
         with:
           name: r2u_config
           path: ~/.local/share/R/r2u
+      # - name: Compute Package Set (Initial)
+      #   run: |
+      #     Rscript -e 'options(width=200);r2u:::.getBuildTargets("/tmp/P.txt",nbatch=40,verbose=TRUE)'
       - name: Compute Package Set
-        run: |
-          Rscript -e 'options(width=200);r2u:::.getBuildTargets("/tmp/P.txt",nbatch=40,verbose=TRUE)'
-      - name: Compute Package Set Again
         id: create-targets
         run: |
           Rscript -e 'options(width=200);r2u:::.getBuildTargets(Sys.getenv("GITHUB_OUTPUT"),nbatch=40,verbose=TRUE,prefix="TARGET")'
-      - name: Upload Package Set
-        uses: actions/upload-artifact@v4.4.0
-        with:
-          name: package_set
-          path: /tmp/P.txt
+      # - name: Upload Package Set
+      #   uses: actions/upload-artifact@v4.4.0
+      #   with:
+      #     name: package_set
+      #     path: /tmp/P.txt
           
-  make_matrix:
-    needs: setup
-    runs-on: ubuntu-24.04-arm
-    if: github.repository == 'eddelbuettel/r2u-arm64-builder'
-    outputs:
-      runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
-    steps:
-      #- name: Get Package Set
-      #  uses: actions/download-artifact@v4.1.8
-      #  with:
-      #    name: package_set
-      #    path: /tmp
-      #- name: Show Package Set
-      #  run: cat /tmp/P.txt
-      - name: Show Package Set
-        run: echo "Targets var is ${TARGETS}"
-        env:
-          TARGETS: ${{ needs.setup.outputs.targets_key }}
-      ## $    
-      ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
-      - id: makematrixstep
-        run: |
-          #TARGETS=$(cat /tmp/P.txt)
-          echo "TARGETS is '$TARGETS'"
-          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" 
-          echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
-          # $"
-        env:
-          TARGETS: ${{ needs.setup.outputs.targets_key }}
+  # make_matrix:
+  #   needs: setup
+  #   runs-on: ubuntu-24.04-arm
+  #   if: github.repository == 'eddelbuettel/r2u-arm64-builder'
+  #   outputs:
+  #     runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
+  #   steps:
+  #     #- name: Get Package Set
+  #     #  uses: actions/download-artifact@v4.1.8
+  #     #  with:
+  #     #    name: package_set
+  #     #    path: /tmp
+  #     #- name: Show Package Set
+  #     #  run: cat /tmp/P.txt
+  #     - name: Show Package Set
+  #       run: echo "Targets var is ${TARGETS}"
+  #       env:
+  #         TARGETS: ${{ needs.setup.outputs.targets_key }}
+  #     ## $    
+  #     ## see https://www.kenmuse.com/blog/dynamic-build-matrices-in-github-actions/
+  #     - id: makematrixstep
+  #       run: |
+  #         #TARGETS=$(cat /tmp/P.txt)
+  #         echo "TARGETS is '$TARGETS'"
+  #         echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" 
+  #         echo "matrixoutput=$(jq -cn --argjson environments "$TARGETS" '$environments')" >> $GITHUB_OUTPUT        
+  #         # $"
+  #       env:
+  #         TARGETS: ${{ needs.setup.outputs.targets_key }}
           
-  build_packages:
+  build:
     #needs: make_matrix
     needs: setup
     runs-on: ubuntu-24.04-arm
