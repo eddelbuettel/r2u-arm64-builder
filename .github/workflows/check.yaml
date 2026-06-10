@@ -16,7 +16,7 @@ jobs:
       image: rocker/r2u:noble
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       #- name: Show sources
       #  run: for f in /etc/apt/sources.list.d/*; do echo "** File is $f"; cat $f; done
       #- name: Modify sources

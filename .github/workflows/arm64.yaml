@@ -19,14 +19,14 @@ jobs:
       targets_key: ${{ steps.create-targets.outputs.TARGET }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Create Default Config and Cache
         run: |
           r -e 'r2u:::.createDefaultConfiguration()'
           r -e 'r2u:::.loadDB()'
           r -e 'r2u:::.loadAP()'
       - name: Fetch Updated Config
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: eddelbuettel/r2u-config
           path: r2u-config
@@ -34,7 +34,7 @@ jobs:
         run: |
           cp -vax r2u-config/* ~/.local/share/R/r2u
       - name: Upload Config
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@main
         with:
           name: r2u_config
           path: ~/.local/share/R/r2u
@@ -46,7 +46,7 @@ jobs:
         run: |
           Rscript -e 'options(width=200);r2u:::.getBuildTargets(Sys.getenv("GITHUB_OUTPUT"),nbatch=40,verbose=TRUE,prefix="TARGET")'
       # - name: Upload Package Set
-      #   uses: actions/upload-artifact@v4.4.0
+      #   uses: actions/upload-artifact@main
       #   with:
       #     name: package_set
       #     path: /tmp/P.txt
@@ -59,7 +59,7 @@ jobs:
   #     runmatrix: ${{ steps.makematrixstep.outputs.matrixoutput }}
   #   steps:
   #     #- name: Get Package Set
-  #     #  uses: actions/download-artifact@v4.1.8
+  #     #  uses: actions/download-artifact@v8
   #     #  with:
   #     #    name: package_set
   #     #    path: /tmp
@@ -94,14 +94,14 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.targets_key) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Get Config
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v8
         with:
           name: r2u_config
           path: ~/.local/share/R/r2u
       - name: Fetch Updated Config
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: eddelbuettel/r2u-config
           path: r2u-config
@@ -113,13 +113,13 @@ jobs:
       - name: Check
         run:  test -f /var/local/r2u/ubuntu/pool/dists/noble/main/*.deb
       - name: Upload Deb
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@main
         with:
           name: deb-${{ matrix.target }}
           path: /var/local/r2u/ubuntu/pool/dists/noble/main/
       - name: Release
         id: release
-        uses: softprops/action-gh-release@v2.2.2  # 2025-06-10: v2 is currently broken
+        uses: softprops/action-gh-release@v3  # 2025-06-10: v2 is currently broken
         with:
           files: /var/local/r2u/ubuntu/pool/dists/noble/main/*deb
           make_latest: true
@@ -133,7 +133,7 @@ jobs:
         id: release2
         # we have about one in 10 or 20 uploads fail and a simple (manual)
         # rerun helps; adding this second trial may alleviate a few of these
-        uses: softprops/action-gh-release@v2.2.2  # 2025-06-10: v2 is currently broken
+        uses: softprops/action-gh-release@v3  # 2025-06-10: v2 is currently broken
         with:
           files: /var/local/r2u/ubuntu/pool/dists/noble/main/*deb
           make_latest: true
@@ -145,7 +145,7 @@ jobs:
         if: failure()
         # as of 2025-Sep-12 the last few days have seen a 2nd attempt fails
         # so adding a third because ... heck why not
-        uses: softprops/action-gh-release@v2.2.2  # 2025-06-10: v2 is currently broken
+        uses: softprops/action-gh-release@v3  # 2025-06-10: v2 is currently broken
         with:
           files: /var/local/r2u/ubuntu/pool/dists/noble/main/*deb
           make_latest: true
@@ -165,12 +165,12 @@ jobs:
   #     matrix: ${{ fromJson(needs.make_matrix.outputs.runmatrix) }}
   #   steps:
   #     - name: Get Deb
-  #       uses: actions/download-artifact@v4.1.8
+  #       uses: actions/download-artifact@v8
   #       with:
   #         name: deb-${{ matrix.target }}
   #         path: /var/local/r2u/ubuntu/pool/dists/noble/main/
   #     - name: Release
-  #       uses: softprops/action-gh-release@v2
+  #       uses: softprops/action-gh-release@v3
   #       with:
   #         files: /var/local/r2u/ubuntu/pool/dists/noble/main/*deb
   #         make_latest: true
