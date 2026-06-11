@@ -24,7 +24,7 @@ jobs:
   #         username: ${{ secrets.DOCKER_USERNAME }}
   #         password: ${{ secrets.DOCKER_PASSWORD }}
   #     - name: Build and push
-  #       uses: docker/build-push-action@v6
+  #       uses: docker/build-push-action@v7
   #       with:
   #         push: true
   #         context: r-ubuntu
@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: r2u-builder
@@ -66,7 +66,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: gha-r2u-builder
